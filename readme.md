@@ -38,6 +38,15 @@ pothole-locate \
   [--step-size <meters>]
 ```
 
+### Example
+
+```bash
+pothole-locate \
+  --metadata img/json/199931331957826.json \
+  --mask    img/npz199931331957826.npz \
+  --dem     dgm/dgm1_hh.vrt
+```
+
 Outputs the pothole's latitude/longitude, distance, and bearing from the camera.
 
 ### Programmatic API

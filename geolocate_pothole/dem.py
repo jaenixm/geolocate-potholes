@@ -1,8 +1,7 @@
-
-
 """
 DEM handling utilities for geolocate_pothole.
 """
+
 import numpy as np
 from pyproj import CRS, Transformer
 import rasterio

@@ -1,8 +1,7 @@
-
-
 """
 Utility functions for geolocate_pothole.
 """
+
 import numpy as np
 
 __all__ = [

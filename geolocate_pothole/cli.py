@@ -1,5 +1,3 @@
-
-
 """
 CLI entry point for geolocate_pothole package.
 """
@@ -8,14 +6,14 @@ import argparse
 import json
 import numpy as np
 from pyproj import datadir
+
 datadir.set_data_dir(datadir.get_data_dir())
 from pyproj import CRS, Transformer, Geod
-import cv2
 
 from .dem import DEMInterpolator
-from .intersection import intersect_ray_with_dem, cam_heading
+from .intersection import intersect_ray_with_dem
+from .orientation import pixel_ray_ecef
 from .utils import load_mask, get_mask_centroid, scale_centroid
-from .coords import get_enu_basis, enu_to_ecef_matrix
 
 
 def parse_args():
@@ -68,16 +66,6 @@ def main():
 
     # 3. Compute normalized pixel ray direction
     f_ratio, k1, k2 = metadata["camera_parameters"]
-    f_px = f_ratio * max(width, height)
-    fx = fy = f_px
-    cx, cy = width / 2.0, height / 2.0
-    rvec = np.asarray(metadata["computed_rotation"], dtype=float)
-    R_wc, _ = cv2.Rodrigues(rvec)
-    R_cw = R_wc.T
-    x_n = (u - cx) / fx
-    y_n = (v - cy) / fy
-    d_cam = np.array([x_n, y_n, 1.0])
-    d_cam /= np.linalg.norm(d_cam)
 
     # 4. Setup coordinate transformers
     crs_ecef = CRS.from_epsg(4978)
@@ -105,12 +93,15 @@ def main():
             ray_origin = np.array(llh2ecef_tf.transform(lon, lat, alt_cam))
 
     # Convert ray direction from camera frame to ECEF
-    east, north, up = get_enu_basis(lon, lat)
-    enu2ecef = enu_to_ecef_matrix(lon, lat)
-    d_enu = R_cw @ d_cam
-    d_enu /= np.linalg.norm(d_enu)
-    d_w = enu2ecef @ d_enu
-    d_w /= np.linalg.norm(d_w)
+    d_w = pixel_ray_ecef(
+        u,
+        v,
+        (width, height),
+        f_ratio,
+        metadata["computed_rotation"],
+        lon,
+        lat,
+    )
 
     # 8. Intersect ray with DEM
     result = intersect_ray_with_dem(

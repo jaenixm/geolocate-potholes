@@ -57,6 +57,7 @@ from geolocate_pothole import (
     intersect_ray_with_dem,
     llh_to_ecef,
     get_enu_basis,
+    pixel_ray_ecef,
     cam_heading,
     load_mask,
     get_mask_centroid,
@@ -87,11 +88,14 @@ u, v = scale_centroid(u_m, v_m, mask.shape, (img_w, img_h))
    - `DEMInterpolator`: Load DEM from file or array, subset by ROI, interpolate elevations with NaN handling.
    - `get_elevation()`: Query interpolated elevation at (lon, lat).
 
-4. **Intersection Logic** (`intersection.py`):
+4. **Orientation** (`orientation.py`):
+   - `pixel_ray_ecef()`: Convert image pixel to a normalized world ray.
+   - `cam_heading()`: Compute bearing from camera to intersection.
+   - Helpers to convert between camera, ENU, and ECEF frames.
+
+5. **Intersection Logic** (`intersection.py`):
    - `intersect_ray_with_dem()`: March a ray from the camera through the DEM to find ground intersection.
    - `_refine_intersection()`: Binary search to precisely locate the hit point.
-   - `cam_heading()`: Compute bearing from camera to intersection.
 
-5. **CLI** (`cli.py`):
+6. **CLI** (`cli.py`):
    - Parses arguments, orchestrates the full pipeline, and prints results.
-

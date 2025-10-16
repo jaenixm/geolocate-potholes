@@ -1,5 +1,3 @@
-
-
 """
 Coordinate transform utilities for geolocate_pothole.
 """

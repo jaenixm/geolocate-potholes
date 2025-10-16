@@ -1,9 +1,7 @@
-
-
 """
 Ray-DEM intersection utilities for geolocate_pothole.
 """
-import math
+
 import numpy as np
 from pyproj import Transformer
 
@@ -91,12 +89,3 @@ def _refine_intersection(
     lon, lat, _ = ecef2llh.transform(point[0], point[1], point[2])
     elev = dem_interpolator.get_elevation(lon, lat)
     return lon, lat, elev if elev is not None else alt
-
-
-def cam_heading(wvec: np.ndarray, east: np.ndarray, north: np.ndarray) -> float:
-    """
-    Compute the heading (degrees) from a world-space vector and local East/North basis.
-    """
-    e = wvec.dot(east)
-    n = wvec.dot(north)
-    return (math.degrees(math.atan2(e, n)) + 360) % 360
